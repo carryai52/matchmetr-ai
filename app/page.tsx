@@ -35,6 +35,7 @@ export default function Home() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const recognitionRef = useRef<any>(null);
+  const messageBeforeDictationRef = useRef("");
   const t = copy[language];
 
   function submit(event: FormEvent) {
@@ -98,7 +99,20 @@ export default function Home() {
   }
 
   async function toggleDictation() {
-    if (listening) stopAudio(); else await startAudio(true);
+    if (listening) confirmDictation();
+    else {
+      messageBeforeDictationRef.current = message;
+      await startAudio(true);
+    }
+  }
+
+  function cancelDictation() {
+    stopAudio();
+    setMessage(messageBeforeDictationRef.current);
+  }
+
+  function confirmDictation() {
+    stopAudio();
   }
 
   async function startVoiceMode() {
@@ -185,12 +199,20 @@ export default function Home() {
 
         <div className={sent.length === 0 ? "composerDock initialDock" : "composerDock"}>
           {attachOpen && <div className="attachMenu"><button onClick={() => setNotice("Демонстрация: файл выбран.")}><Library />Добавить фотографии и файлы</button><button onClick={() => setNotice("Демонстрация: проект выбран.")}><LayoutGrid />Выбрать проект</button></div>}
-          <form className="composer" onSubmit={submit}>
-            <button type="button" className="composerIcon" aria-label="Add files" onClick={() => setAttachOpen((v) => !v)}><Plus /></button>
-            <input aria-label="Message ChatGPT" placeholder={t.placeholder} value={message} onChange={(e) => setMessage(e.target.value)} />
-            <button type="button" className={listening ? "composerIcon listening" : "composerIcon"} aria-label={listening ? "Stop dictation" : "Start dictation"} onClick={toggleDictation}><Mic /></button>
-            <button type="button" className="voiceButton" aria-label="Voice mode" onClick={startVoiceMode}><Volume2 /></button>
-            <button className="send" aria-label="Send message" disabled={!message.trim()}><ArrowUp size={19} strokeWidth={2.4} /></button>
+          <form className={listening && !voiceOpen ? "composer dictating" : "composer"} onSubmit={submit}>
+            {listening && !voiceOpen ? <>
+              <div className="waveform"><span className="waveLine" /><span className="liveBars">{[8,18,30,24,34,28,36,26,18,32,34,22,30].map((height,i) => <i key={i} style={{height}} />)}</span></div>
+              <div className="dictationBottom">
+                <button type="button" className="composerIcon" aria-label="Add files" onClick={() => setAttachOpen((v) => !v)}><Plus /></button>
+                <div className="dictationActions"><button type="button" aria-label="Отменить диктовку" onClick={cancelDictation}><X /></button><button type="button" aria-label="Подтвердить диктовку" onClick={confirmDictation}><Check /></button></div>
+              </div>
+            </> : <>
+              <button type="button" className="composerIcon" aria-label="Add files" onClick={() => setAttachOpen((v) => !v)}><Plus /></button>
+              <input aria-label="Message ChatGPT" placeholder={t.placeholder} value={message} onChange={(e) => setMessage(e.target.value)} />
+              <button type="button" className="composerIcon" aria-label="Start dictation" onClick={toggleDictation}><Mic /></button>
+              <button type="button" className="voiceButton" aria-label="Voice mode" onClick={startVoiceMode}><Volume2 /></button>
+              <button className="send" aria-label="Send message" disabled={!message.trim()}><ArrowUp size={19} strokeWidth={2.4} /></button>
+            </>}
           </form>
           <footer>ChatGPT может допускать ошибки. Проверяйте важную информацию.</footer>
         </div>
