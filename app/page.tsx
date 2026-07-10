@@ -1,13 +1,15 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-
-const Icon = ({ children }: { children: React.ReactNode }) => <span className="icon" aria-hidden="true">{children}</span>;
+import {
+  AppWindow, ArrowUp, ChevronDown, Images, LayoutGrid, Menu,
+  MessageSquarePlus, PanelLeftClose, PanelLeftOpen, Search, Telescope,
+} from "lucide-react";
 
 export default function Home() {
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState<string[]>([]);
-  const [sidebar, setSidebar] = useState(false);
+  const [sidebar, setSidebar] = useState(true);
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -19,29 +21,29 @@ export default function Home() {
 
   return (
     <main className="shell">
-      <aside className={sidebar ? "sidebar open" : "sidebar"} aria-label="Chat navigation">
+      <aside className={sidebar ? "sidebar open" : "sidebar closed"} aria-label="Chat navigation">
         <div className="sideTop">
-          <button className="brandBtn" aria-label="Open menu"><span className="mark">◎</span></button>
-          <button className="roundBtn" aria-label="Close sidebar" onClick={() => setSidebar(false)}>‹</button>
+          <button className="brandBtn" aria-label="ChatGPT home"><span className="brandMark">◉</span></button>
+          <button className="roundBtn" aria-label="Close sidebar" onClick={() => setSidebar(false)}><PanelLeftClose size={19} strokeWidth={1.8} /></button>
         </div>
         <nav className="navList">
-          <button><Icon>⌑</Icon><span>New chat</span><kbd>⌘ ⇧ O</kbd></button>
-          <button><Icon>⌕</Icon><span>Search chats</span><kbd>⌘ K</kbd></button>
-          <button><Icon>▧</Icon><span>Images</span></button>
-          <button><Icon>◈</Icon><span>Apps</span></button>
-          <button><Icon>▱</Icon><span>Deep research</span></button>
-          <button><Icon>◇</Icon><span>Projects</span></button>
+          <button><MessageSquarePlus /><span>New chat</span><kbd>Ctrl ⇧ O</kbd></button>
+          <button><Search /><span>Search chats</span><kbd>Ctrl K</kbd></button>
+          <button><Images /><span>Images</span></button>
+          <button><AppWindow /><span>Apps</span></button>
+          <button><Telescope /><span>Deep research</span></button>
+          <button><LayoutGrid /><span>Projects</span></button>
         </nav>
         <div className="sideBottom">
-          <button><Icon>?</Icon><span><strong>Help</strong><small>Get answers and support</small></span></button>
-          <button><Icon>⚙</Icon><span><strong>Settings</strong><small>Customize ChatGPT</small></span></button>
+          <button className="profile" aria-label="Open profile menu"><span className="avatar">В</span><span><strong>Вася</strong><small>Free</small></span><span className="profileDots">•••</span></button>
         </div>
       </aside>
 
       <section className="chat">
         <header>
-          <button className="mobileMenu" aria-label="Open sidebar" onClick={() => setSidebar(true)}>☰</button>
-          <button className="model">ChatGPT <span>⌄</span></button>
+          <button className={sidebar ? "openSidebar hidden" : "openSidebar"} aria-label="Open sidebar" onClick={() => setSidebar(true)}><PanelLeftOpen size={20} /></button>
+          <button className="mobileMenu" aria-label="Open sidebar" onClick={() => setSidebar(true)}><Menu size={20} /></button>
+          <button className="model">ChatGPT <ChevronDown size={16} /></button>
           <div className="headerActions"><button className="login">Log in</button><button className="signup">Sign up for free</button></div>
         </header>
 
@@ -54,14 +56,8 @@ export default function Home() {
           )}
 
           <form className="composer" onSubmit={submit}>
-            <textarea aria-label="Message ChatGPT" placeholder="Ask anything" value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }} />
-            <div className="composerTools">
-              <button type="button" className="toolBtn" aria-label="Add attachment">＋</button>
-              <button type="button" className="tools"><span>⊹</span> Tools</button>
-              <div className="spacer" />
-              <button type="button" className="voice" aria-label="Voice mode">⌁</button>
-              <button className="send" aria-label="Send message" disabled={!message.trim()}>↑</button>
-            </div>
+            <input aria-label="Message ChatGPT" placeholder="Ask anything" value={message} onChange={(e) => setMessage(e.target.value)} />
+            <button className="send" aria-label="Send message" disabled={!message.trim()}><ArrowUp size={19} strokeWidth={2.4} /></button>
           </form>
         </div>
 
