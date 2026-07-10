@@ -5,7 +5,7 @@ import {
   AppWindow, ArrowUp, Bell, CalendarClock, Check, ChevronDown, ChevronRight,
   CircleHelp, Database, Ellipsis, Images, LayoutGrid, Library, LogOut, Menu,
   MessageSquarePlus, Mic, PanelLeftClose, PanelLeftOpen, Plug, Search, Settings,
-  Share, Shield, SlidersHorizontal, Sparkles, Telescope, UserRound, Volume2,
+  Plus, Share, Shield, SlidersHorizontal, Sparkles, Telescope, UserRound, Volume2,
 } from "lucide-react";
 
 type Language = "ru" | "en";
@@ -28,6 +28,10 @@ export default function Home() {
   const [authenticated, setAuthenticated] = useState(true);
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
   const [settingsSection, setSettingsSection] = useState<SettingsSection>("general");
+  const [attachOpen, setAttachOpen] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const t = copy[language];
 
   function submit(event: FormEvent) {
@@ -40,6 +44,12 @@ export default function Home() {
 
   function openSettings() {
     setProfileOpen(false);
+    setSettingsOpen(true);
+  }
+
+  function openSettingsAt(section:SettingsSection) {
+    setProfileOpen(false);
+    setSettingsSection(section);
     setSettingsOpen(true);
   }
 
@@ -75,12 +85,12 @@ export default function Home() {
             <div className="profileMenu" role="menu">
               <button className="menuIdentity"><span className="avatar coral">vo</span><span><strong>Вася</strong><small>Plus</small></span><ChevronRight size={18} /></button>
               <div className="menuDivider" />
-              <button><Sparkles /><span>Изменить план</span></button>
-              <button><SlidersHorizontal /><span>Персонализация</span></button>
-              <button><UserRound /><span>Профиль</span></button>
+              <button onClick={() => { setProfileOpen(false); setNotice("Тариф Plus уже выбран для демонстрации."); }}><Sparkles /><span>Изменить план</span></button>
+              <button onClick={() => openSettingsAt("personalization")}><SlidersHorizontal /><span>Персонализация</span></button>
+              <button onClick={() => openSettingsAt("account")}><UserRound /><span>Профиль</span></button>
               <button onClick={openSettings}><Settings /><span>Настройки</span></button>
               <div className="menuDivider" />
-              <button><CircleHelp /><span>Справка</span><ChevronRight className="push" /></button>
+              <button onClick={() => { setProfileOpen(false); setNotice("Центр справки: выберите тему или задайте вопрос службе поддержки."); }}><CircleHelp /><span>Справка</span><ChevronRight className="push" /></button>
               <button onClick={() => { setAuthenticated(false); setProfileOpen(false); }}><LogOut /><span>Выйти</span></button>
             </div>
           )}
@@ -102,7 +112,7 @@ export default function Home() {
           <div className="headerActions">{authenticated ? <><button className="headerIcon"><Share />{language === "ru" ? "Поделиться" : "Share"}</button><button className="plainIcon"><SlidersHorizontal /></button><button className="plainIcon"><Ellipsis /></button></> : <><button className="login" onClick={() => setAuthMode("login")}>Log in</button><button className="signup" onClick={() => setAuthMode("signup")}>Sign up for free</button></>}</div>
         </header>
 
-        <div className="chatBody">
+        <div className={sent.length === 0 ? "chatBody initial" : "chatBody"}>
           {sent.length === 0 ? <div className="emptyState"><h1>{t.title}</h1></div> : (
             <div className="messages">
               {sent.map((item, i) => (
@@ -115,12 +125,13 @@ export default function Home() {
           )}
         </div>
 
-        <div className="composerDock">
+        <div className={sent.length === 0 ? "composerDock initialDock" : "composerDock"}>
+          {attachOpen && <div className="attachMenu"><button onClick={() => setNotice("Демонстрация: файл выбран.")}><Library />Добавить фотографии и файлы</button><button onClick={() => setNotice("Демонстрация: проект выбран.")}><LayoutGrid />Выбрать проект</button></div>}
           <form className="composer" onSubmit={submit}>
-            <button type="button" className="composerIcon" aria-label="Add files"><span>＋</span></button>
+            <button type="button" className="composerIcon" aria-label="Add files" onClick={() => setAttachOpen((v) => !v)}><Plus /></button>
             <input aria-label="Message ChatGPT" placeholder={t.placeholder} value={message} onChange={(e) => setMessage(e.target.value)} />
-            <button type="button" className="composerIcon" aria-label="Dictation"><Mic /></button>
-            <button type="button" className="voiceButton" aria-label="Voice mode"><Volume2 /></button>
+            <button type="button" className={listening ? "composerIcon listening" : "composerIcon"} aria-label="Dictation" onClick={() => setListening((v) => !v)}><Mic /></button>
+            <button type="button" className="voiceButton" aria-label="Voice mode" onClick={() => setVoiceOpen(true)}><Volume2 /></button>
             <button className="send" aria-label="Send message" disabled={!message.trim()}><ArrowUp size={19} strokeWidth={2.4} /></button>
           </form>
           <footer>ChatGPT может допускать ошибки. Проверяйте важную информацию.</footer>
@@ -151,6 +162,8 @@ export default function Home() {
       )}
 
       {authMode && <AuthModal mode={authMode} onClose={() => setAuthMode(null)} onSuccess={() => { setAuthenticated(true); setAuthMode(null); }} onSwitch={setAuthMode} />}
+      {voiceOpen && <div className="voiceOverlay"><button className="voiceClose" onClick={() => setVoiceOpen(false)}>×</button><div className="voiceOrb"><Volume2 /></div><h2>Голосовой режим</h2><p>Нажмите, чтобы завершить демонстрацию</p><button className="voiceStop" onClick={() => setVoiceOpen(false)}>Завершить</button></div>}
+      {notice && <div className="notice"><span>{notice}</span><button onClick={() => setNotice(null)}>×</button></div>}
     </main>
   );
 }
