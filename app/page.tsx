@@ -1,11 +1,11 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import {
   AppWindow, ArrowUp, Bell, CalendarClock, Check, ChevronDown, ChevronRight,
   CircleHelp, Database, Ellipsis, Images, LayoutGrid, Library, LogOut, Menu,
   MessageSquarePlus, Mic, PanelLeftClose, PanelLeftOpen, Plug, Search, Settings,
-  Plus, Share, Shield, SlidersHorizontal, Sparkles, Telescope, UserRound, Volume2,
+  Plus, Share, Shield, SlidersHorizontal, Sparkles, Telescope, UserRound, Volume2, X,
 } from "lucide-react";
 
 type Language = "ru" | "en";
@@ -32,6 +32,9 @@ export default function Home() {
   const [listening, setListening] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const recognitionRef = useRef<any>(null);
   const t = copy[language];
 
   function submit(event: FormEvent) {
@@ -51,6 +54,61 @@ export default function Home() {
     setProfileOpen(false);
     setSettingsSection(section);
     setSettingsOpen(true);
+  }
+
+  function stopAudio() {
+    recognitionRef.current?.stop?.();
+    recognitionRef.current = null;
+    if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.stop();
+    mediaRecorderRef.current = null;
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+    setListening(false);
+  }
+
+  async function startAudio(transcribe:boolean) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+      streamRef.current = stream;
+      const recorder = new MediaRecorder(stream);
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      setListening(true);
+      if (transcribe) {
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          const recognition = new SpeechRecognition();
+          recognition.lang = language === "ru" ? "ru-RU" : "en-US";
+          recognition.interimResults = true;
+          recognition.continuous = true;
+          recognition.onresult = (event:any) => {
+            let transcript = "";
+            for (let i = event.resultIndex; i < event.results.length; i += 1) transcript += event.results[i][0].transcript;
+            if (transcript.trim()) setMessage(transcript.trim());
+          };
+          recognition.onerror = () => setNotice("Не удалось распознать речь. Проверьте доступ к микрофону.");
+          recognitionRef.current = recognition;
+          recognition.start();
+        } else setNotice("Запись началась, но распознавание речи не поддерживается этим браузером.");
+      }
+    } catch {
+      setNotice("Доступ к микрофону запрещён. Разрешите его в адресной строке браузера и попробуйте снова.");
+      stopAudio();
+    }
+  }
+
+  async function toggleDictation() {
+    if (listening) stopAudio(); else await startAudio(true);
+  }
+
+  async function startVoiceMode() {
+    await startAudio(false);
+    if (streamRef.current) setVoiceOpen(true);
+  }
+
+  function closeVoiceMode() {
+    stopAudio();
+    setVoiceOpen(false);
   }
 
   return (
@@ -130,8 +188,8 @@ export default function Home() {
           <form className="composer" onSubmit={submit}>
             <button type="button" className="composerIcon" aria-label="Add files" onClick={() => setAttachOpen((v) => !v)}><Plus /></button>
             <input aria-label="Message ChatGPT" placeholder={t.placeholder} value={message} onChange={(e) => setMessage(e.target.value)} />
-            <button type="button" className={listening ? "composerIcon listening" : "composerIcon"} aria-label="Dictation" onClick={() => setListening((v) => !v)}><Mic /></button>
-            <button type="button" className="voiceButton" aria-label="Voice mode" onClick={() => setVoiceOpen(true)}><Volume2 /></button>
+            <button type="button" className={listening ? "composerIcon listening" : "composerIcon"} aria-label={listening ? "Stop dictation" : "Start dictation"} onClick={toggleDictation}><Mic /></button>
+            <button type="button" className="voiceButton" aria-label="Voice mode" onClick={startVoiceMode}><Volume2 /></button>
             <button className="send" aria-label="Send message" disabled={!message.trim()}><ArrowUp size={19} strokeWidth={2.4} /></button>
           </form>
           <footer>ChatGPT может допускать ошибки. Проверяйте важную информацию.</footer>
@@ -143,7 +201,7 @@ export default function Home() {
       {settingsOpen && (
         <div className="modalBackdrop" onMouseDown={() => setSettingsOpen(false)}>
           <section className="settingsModal" role="dialog" aria-modal="true" aria-label={t.settings} onMouseDown={(e) => e.stopPropagation()}>
-            <div className="settingsHead"><h2>{t.settings}</h2><button onClick={() => setSettingsOpen(false)}>×</button></div>
+            <div className="settingsHead"><h2>{t.settings}</h2><button aria-label="Закрыть" onClick={() => setSettingsOpen(false)}><X /></button></div>
             <div className="settingsLayout">
               <nav className="settingsNav">
                 {([['general',Settings,'Общие'],['notifications',Bell,'Уведомления'],['personalization',SlidersHorizontal,'Персонализация'],['apps',Plug,'Приложения'],['data',Database,'Управление данными'],['security',Shield,'Безопасность'],['account',UserRound,'Аккаунт']] as const).map(([id,Icon,label]) => <button key={id} className={settingsSection === id ? "active" : ""} onClick={() => setSettingsSection(id)}><Icon />{label}</button>)}
@@ -162,8 +220,8 @@ export default function Home() {
       )}
 
       {authMode && <AuthModal mode={authMode} onClose={() => setAuthMode(null)} onSuccess={() => { setAuthenticated(true); setAuthMode(null); }} onSwitch={setAuthMode} />}
-      {voiceOpen && <div className="voiceOverlay"><button className="voiceClose" onClick={() => setVoiceOpen(false)}>×</button><div className="voiceOrb"><Volume2 /></div><h2>Голосовой режим</h2><p>Нажмите, чтобы завершить демонстрацию</p><button className="voiceStop" onClick={() => setVoiceOpen(false)}>Завершить</button></div>}
-      {notice && <div className="notice"><span>{notice}</span><button onClick={() => setNotice(null)}>×</button></div>}
+      {voiceOpen && <div className="voiceOverlay"><button className="voiceClose" aria-label="Закрыть голосовой режим" onClick={closeVoiceMode}><X /></button><div className="voiceOrb live"><Mic /></div><h2>Слушаю…</h2><p>Голосовой режим использует микрофон</p><button className="voiceStop" onClick={closeVoiceMode}>Завершить</button></div>}
+      {notice && <div className="notice"><span>{notice}</span><button aria-label="Закрыть уведомление" onClick={() => setNotice(null)}><X /></button></div>}
     </main>
   );
 }
@@ -188,5 +246,5 @@ function SettingsPanel({ section }: { section:SettingsSection }) {
 
 function AuthModal({mode,onClose,onSuccess,onSwitch}:{mode:"login"|"signup";onClose:()=>void;onSuccess:()=>void;onSwitch:(m:"login"|"signup")=>void}) {
   const login=mode === "login";
-  return <div className="authBackdrop"><section className="authModal"><button className="authClose" onClick={onClose}>×</button><div className="authLogo">◉</div><h2>{login ? "С возвращением" : "Создайте аккаунт"}</h2><p>{login ? "Войдите в ChatGPT" : "Зарегистрируйтесь, чтобы продолжить"}</p><input type="email" placeholder="Адрес электронной почты" /><button className="authContinue" onClick={onSuccess}>Продолжить</button><div className="or"><span>или</span></div><button className="provider">G&nbsp;&nbsp; Продолжить с Google</button><button className="provider">▦&nbsp;&nbsp; Продолжить с Microsoft</button><button className="provider">●&nbsp;&nbsp; Продолжить с Apple</button><p className="authSwitch">{login ? "Нет аккаунта?" : "Уже есть аккаунт?"} <button onClick={() => onSwitch(login ? "signup" : "login")}>{login ? "Регистрация" : "Войти"}</button></p></section></div>;
+  return <div className="authBackdrop"><section className="authModal"><button className="authClose" aria-label="Закрыть" onClick={onClose}><X /></button><div className="authLogo">◉</div><h2>{login ? "С возвращением" : "Создайте аккаунт"}</h2><p>{login ? "Войдите в ChatGPT" : "Зарегистрируйтесь, чтобы продолжить"}</p><input type="email" placeholder="Адрес электронной почты" /><button className="authContinue" onClick={onSuccess}>Продолжить</button><div className="or"><span>или</span></div><button className="provider">G&nbsp;&nbsp; Продолжить с Google</button><button className="provider">▦&nbsp;&nbsp; Продолжить с Microsoft</button><button className="provider">●&nbsp;&nbsp; Продолжить с Apple</button><p className="authSwitch">{login ? "Нет аккаунта?" : "Уже есть аккаунт?"} <button onClick={() => onSwitch(login ? "signup" : "login")}>{login ? "Регистрация" : "Войти"}</button></p></section></div>;
 }
