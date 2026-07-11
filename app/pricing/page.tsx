@@ -1,27 +1,41 @@
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
-import { ParticleOrb } from "../particle-orb";
 
 const plans = [
   {
     name: "Free",
-    price: "0 ₽",
-    note: "Чтобы познакомиться с Carry",
-    features: ["5 стартовых токенов", "Быстрый анализ", "Базовая оценка вероятности"],
+    price: "$0",
+    period: "",
+    tokens: "5 токенов",
+    description: "Для первого знакомства с Carry AI",
+    features: ["5 токенов при регистрации", "Быстрый ответ за 1 токен", "Стандартный анализ за 3 токена"],
+    cta: "Начать бесплатно",
   },
   {
     name: "Pro",
-    price: "Скоро",
-    note: "Для регулярного анализа матчей",
-    featured: true,
-    features: ["Все режимы анализа", "Расширенные источники", "История прогнозов", "Приоритетная обработка"],
+    price: "$29.99",
+    period: "/ месяц",
+    tokens: "50 токенов",
+    description: "Для регулярной аналитики матчей",
+    features: ["50 токенов каждый месяц", "Все типы анализа", "Глубокий анализ за 5 токенов", "Полный анализ с источниками за 10 токенов"],
+    cta: "Скоро",
+    popular: true,
   },
   {
-    name: "Team",
-    price: "Скоро",
-    note: "Для аналитиков и команд",
-    features: ["Общий workspace", "Командная история", "Экспорт отчётов", "Персональная поддержка"],
+    name: "High",
+    price: "$59.99",
+    period: "/ месяц",
+    tokens: "100 токенов",
+    description: "Для профессиональных аналитиков",
+    features: ["100 токенов каждый месяц", "Все возможности Pro", "API-доступ", "Персональная поддержка"],
+    cta: "Скоро",
   },
+];
+
+const tokenPacks = [
+  { amount: "10 токенов", price: "$9.99" },
+  { amount: "50 токенов", price: "$49.99" },
+  { amount: "100 токенов", price: "$89.99" },
 ];
 
 export default function PricingPage() {
@@ -30,31 +44,43 @@ export default function PricingPage() {
       <header className="pricingHeader">
         <Link href="/" className="pricingBack"><ArrowLeft size={17} />Вернуться в чат</Link>
         <div className="pricingBrand"><span className="brandMark" />CARRY</div>
-        <span className="pricingStatus">PAYMENTS / SOON</span>
+        <span className="pricingStatus">PRICING / PREVIEW</span>
       </header>
 
-      <section className="pricingHero">
-        <div className="pricingOrb"><ParticleOrb /></div>
-        <span className="pricingEyebrow">CARRY ACCESS</span>
-        <h1>Выберите глубину анализа</h1>
-        <p>Оплата пока отключена. Сейчас можно использовать бесплатный доступ, а платные планы появятся после запуска биллинга.</p>
+      <section className="pricingHero compact">
+        <h1>Обновите свой план</h1>
+        <p>Выберите объём и глубину анализа. Оплата появится позже — сейчас тарифы доступны для предварительного просмотра.</p>
       </section>
 
       <section className="pricingGrid" aria-label="Тарифы Carry">
         {plans.map((plan) => (
-          <article key={plan.name} className={plan.featured ? "priceCard featured" : "priceCard"}>
+          <article key={plan.name} className={plan.popular ? "priceCard featured" : "priceCard"}>
             <div className="priceCardHead">
               <h2>{plan.name}</h2>
-              {plan.featured && <span>Рекомендуем</span>}
+              {plan.popular && <span>Рекомендуем</span>}
             </div>
-            <strong className="priceValue">{plan.price}</strong>
-            <p>{plan.note}</p>
-            <button disabled={plan.name !== "Free"}>{plan.name === "Free" ? "Начать бесплатно" : "Уведомить о запуске"}</button>
+            <div className="priceLine"><strong className="priceValue">{plan.price}</strong><span>{plan.period}</span></div>
+            <strong className="tokenValue">{plan.tokens}</strong>
+            <p>{plan.description}</p>
+            <button disabled={plan.name !== "Free"}>{plan.cta}</button>
             <ul>
               {plan.features.map((feature) => <li key={feature}><Check size={16} />{feature}</li>)}
             </ul>
           </article>
         ))}
+      </section>
+
+      <section className="tokenSection">
+        <div className="tokenSectionHead"><span>TOKEN PACKS</span><h2>Купить токены отдельно</h2></div>
+        <div className="tokenGrid">
+          {tokenPacks.map((pack) => (
+            <article key={pack.amount} className="tokenCard">
+              <strong>{pack.amount}</strong>
+              <span>{pack.price}</span>
+              <button disabled>Скоро</button>
+            </article>
+          ))}
+        </div>
       </section>
     </main>
   );

@@ -53,9 +53,6 @@ header { height:56px; flex:0 0 56px; display:flex; align-items:center; padding:8
 .model { display:flex; align-items:center; gap:5px; border:0; border-radius:8px; padding:8px 10px; background:transparent; font-size:18px; font-weight:650; cursor:pointer; }
 .model:hover { background:var(--hover); }
 .model svg { color:var(--muted); }
-.headerActions { margin-left:auto; display:flex; gap:8px; }
-.pricingLink { height:34px; display:flex; align-items:center; border:1px solid var(--line); border-radius:18px; padding:0 14px; color:var(--ink); text-decoration:none; font-size:13px; font-weight:500; }
-.pricingLink:hover { background:var(--hover); }
 .headerIcon,.plainIcon { height:34px; display:flex; align-items:center; gap:7px; border:0; border-radius:8px; padding:0 9px; background:transparent; cursor:pointer; }
 .headerIcon:hover,.plainIcon:hover { background:var(--hover); }
 .headerIcon svg,.plainIcon svg { width:17px; height:17px; }
@@ -66,12 +63,11 @@ header { height:56px; flex:0 0 56px; display:flex; align-items:center; padding:8
 .openSidebar.hidden { display:none; }
 .mobileMenu,.scrim { display:none; }
 .chatBody { min-height:0; flex:1; overflow-y:auto; }
-.chatBody.initial { display:flex; align-items:center; justify-content:center; padding:72px 20px 210px; overflow:hidden; }
-.emptyState { width:min(768px,100%); min-height:0; margin:0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; transform:none; text-align:center; }
-.carryOrbStage { width:320px; height:320px; margin-bottom:22px; overflow:hidden; border-radius:50%; background:#050706; box-shadow:0 0 0 1px rgba(125,222,216,.13),0 36px 110px rgba(0,0,0,.35); }
+.chatBody.initial { display:flex; align-items:center; justify-content:center; padding:40px 20px 240px; overflow:hidden; }
+.emptyState { width:min(768px,100%); min-height:0; margin:0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; transform:translateY(-38px); text-align:center; }
+.carryOrbStage { width:350px; height:350px; margin-bottom:24px; overflow:hidden; border-radius:50%; background:#050706; box-shadow:0 0 0 1px rgba(125,222,216,.13),0 36px 110px rgba(0,0,0,.35); }
 .particleOrb { display:block; width:100%; height:100%; }
 .carryIntro { display:flex; flex-direction:column; align-items:center; }
-.carryIntro>span { margin-bottom:11px; color:var(--muted); font-family:var(--font-geist-mono),monospace; font-size:10px; font-weight:600; letter-spacing:.14em; }
 .carryIntro p { max-width:500px; margin:10px 0 0; color:var(--muted); font-size:14px; line-height:1.55; }
 h1 { margin:0; font-size:28px; line-height:1.25; letter-spacing:-.7px; font-weight:600; }
 .messages { width:min(768px,calc(100% - 32px)); margin:0 auto; padding:32px 0 20px; }
@@ -79,7 +75,7 @@ h1 { margin:0; font-size:28px; line-height:1.25; letter-spacing:-.7px; font-weig
 .bubble { align-self:flex-end; max-width:70%; padding:10px 16px; border-radius:20px; background:var(--hover); font-size:15px; line-height:1.45; }
 .assistantMsg { width:100%; padding:0 2px; font-size:16px; line-height:1.75; }
 .composerDock { position:relative; flex:0 0 auto; width:min(768px,calc(100% - 32px)); margin:0 auto; padding:8px 0 8px; }
-.composerDock.initialDock { position:absolute; z-index:5; left:50%; bottom:82px; top:auto; transform:translateX(-50%); margin:0; padding:0; }
+.composerDock.initialDock { position:absolute; z-index:5; left:50%; bottom:124px; top:auto; transform:translateX(-50%); margin:0; padding:0; }
 .composer { height:56px; display:flex; align-items:center; gap:5px; padding:6px 7px 6px 9px; border:1px solid var(--line); border-radius:28px; background:var(--paper); box-shadow:0 2px 9px rgba(0,0,0,.08); }
 .theme-dark .composer { background:#212121; border-color:#2f2f2f; box-shadow:none; }
 .composer.dictating { height:128px; display:block; padding:7px 14px 8px 12px; border-radius:27px; }
@@ -177,8 +173,7 @@ footer { padding-top:8px; text-align:center; color:var(--muted); font-size:11px;
 .pricingBrand { display:flex; align-items:center; gap:9px; font-size:13px; font-weight:700; letter-spacing:.12em; }
 .pricingStatus { justify-self:end; color:#6f6f6f; font-family:var(--font-geist-mono),monospace; font-size:10px; letter-spacing:.12em; }
 .pricingHero { width:min(720px,100%); margin:64px auto 0; display:flex; flex-direction:column; align-items:center; text-align:center; }
-.pricingOrb { width:112px; height:112px; margin-bottom:24px; overflow:hidden; border:1px solid #242424; border-radius:50%; background:#050706; }
-.pricingEyebrow { margin-bottom:14px; color:#777; font-family:var(--font-geist-mono),monospace; font-size:10px; font-weight:600; letter-spacing:.14em; }
+.pricingHero.compact { margin-top:74px; }
 .pricingHero h1 { margin:0; font-size:38px; line-height:1.15; letter-spacing:-1.5px; font-weight:620; }
 .pricingHero p { max-width:580px; margin:16px 0 0; color:#929292; font-size:15px; line-height:1.6; }
 .pricingGrid { width:min(1120px,100%); margin:54px auto 0; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
@@ -188,12 +183,25 @@ footer { padding-top:8px; text-align:center; color:var(--muted); font-size:11px;
 .priceCard h2 { margin:0; font-size:18px; font-weight:600; letter-spacing:-.3px; }
 .priceCardHead span { border:1px solid #33423f; border-radius:999px; padding:4px 8px; color:#9ddfd9; font-size:10px; }
 .priceValue { margin-top:28px; font-size:34px; line-height:1; letter-spacing:-1.2px; font-weight:600; }
+.priceLine { display:flex; align-items:flex-end; gap:7px; margin-top:28px; }
+.priceLine .priceValue { margin:0; }
+.priceLine>span { padding-bottom:3px; color:#737373; font-size:12px; }
+.tokenValue { margin-top:10px; color:#e8a84b; font-size:14px; font-weight:650; }
 .priceCard>p { min-height:42px; margin:13px 0 0; color:#8d8d8d; line-height:1.5; }
 .priceCard button { width:100%; height:42px; margin-top:24px; border:1px solid #333; border-radius:10px; background:#f2f2f2; color:#0a0a0a; font-size:13px; font-weight:600; cursor:pointer; }
 .priceCard button:disabled { background:#151515; color:#666; cursor:not-allowed; }
 .priceCard ul { margin:24px 0 0; padding:22px 0 0; border-top:1px solid #202020; list-style:none; display:flex; flex-direction:column; gap:13px; color:#b5b5b5; }
 .priceCard li { display:flex; align-items:center; gap:10px; }
 .priceCard li svg { color:#7dded8; }
+.tokenSection { width:min(1120px,100%); margin:72px auto 0; padding-top:48px; border-top:1px solid #202020; }
+.tokenSectionHead { text-align:center; }
+.tokenSectionHead>span { color:#e8a84b; font-family:var(--font-geist-mono),monospace; font-size:10px; font-weight:600; letter-spacing:.14em; }
+.tokenSectionHead h2 { margin:12px 0 0; font-size:26px; font-weight:620; letter-spacing:-.7px; }
+.tokenGrid { margin-top:28px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.tokenCard { display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px 16px; padding:20px; border:1px solid #232323; border-radius:16px; background:#090909; }
+.tokenCard strong { color:#e8a84b; font-size:16px; }
+.tokenCard>span { grid-column:1; color:#f2f2f2; font-size:24px; font-weight:600; letter-spacing:-.5px; }
+.tokenCard button { grid-column:2; grid-row:1 / span 2; height:36px; border:1px solid #292929; border-radius:9px; padding:0 15px; background:#121212; color:#616161; }
 
 @media (max-width:760px) {
   .sidebar { position:fixed; inset:0 auto 0 0; z-index:40; width:260px; transform:translateX(-100%); transition:transform .2s ease; }
@@ -205,10 +213,10 @@ footer { padding-top:8px; text-align:center; color:var(--muted); font-size:11px;
   .signup { display:none; }
   .emptyState,.messages,.composerDock { width:calc(100% - 24px); }
   h1 { font-size:24px; }
-  .chatBody.initial { padding:50px 12px 180px; }
-  .carryOrbStage { width:230px; height:230px; margin-bottom:18px; }
-  .composerDock.initialDock { bottom:62px; }
-  .pricingLink { padding:0 11px; }
+  .chatBody.initial { padding:28px 12px 190px; }
+  .emptyState { transform:translateY(-24px); }
+  .carryOrbStage { width:250px; height:250px; margin-bottom:18px; }
+  .composerDock.initialDock { bottom:78px; }
   .settingRow { grid-template-columns:1fr; gap:8px; }
   .settingsModal { height:90vh; }
   .settingsLayout { grid-template-columns:1fr; }
@@ -220,4 +228,5 @@ footer { padding-top:8px; text-align:center; color:var(--muted); font-size:11px;
   .pricingHero { margin-top:42px; }
   .pricingHero h1 { font-size:30px; }
   .pricingGrid { grid-template-columns:1fr; margin-top:36px; }
+  .tokenGrid { grid-template-columns:1fr; }
 }

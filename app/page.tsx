@@ -1,13 +1,12 @@
 "use client";
 
 import { FormEvent, useRef, useState } from "react";
-import Link from "next/link";
 import { ParticleOrb } from "./particle-orb";
 import {
-  AppWindow, ArrowUp, Bell, CalendarClock, Check, ChevronDown, ChevronRight,
+  AppWindow, ArrowUp, Bell, CalendarClock, Check, ChevronRight,
   CircleHelp, Database, Ellipsis, Images, LayoutGrid, Library, LogOut, Menu,
   MessageSquarePlus, Mic, PanelLeftClose, PanelLeftOpen, Plug, Search, Settings,
-  Plus, Share, Shield, SlidersHorizontal, Sparkles, Telescope, UserRound, Volume2, X,
+  Plus, Shield, SlidersHorizontal, Sparkles, Telescope, UserRound, Volume2, X,
 } from "lucide-react";
 
 type Language = "ru" | "en";
@@ -182,12 +181,10 @@ export default function Home() {
         <header>
           <button className={sidebar ? "openSidebar hidden" : "openSidebar"} aria-label="Open sidebar" onClick={() => setSidebar(true)}><PanelLeftOpen size={20} /></button>
           <button className="mobileMenu" aria-label="Open sidebar" onClick={() => setSidebar(true)}><Menu size={20} /></button>
-          <button className="model">Carry 5.6 Ultra <ChevronDown size={15} /></button>
-          <div className="headerActions"><Link className="pricingLink" href="/pricing">Тарифы</Link>{authenticated ? <><button className="headerIcon"><Share />{language === "ru" ? "Поделиться" : "Share"}</button><button className="plainIcon"><SlidersHorizontal /></button><button className="plainIcon"><Ellipsis /></button></> : <><button className="login" onClick={() => setAuthMode("login")}>Log in</button><button className="signup" onClick={() => setAuthMode("signup")}>Sign up for free</button></>}</div>
         </header>
 
         <div className={sent.length === 0 ? "chatBody initial" : "chatBody"}>
-          {sent.length === 0 ? <div className="emptyState"><div className="carryOrbStage"><ParticleOrb /></div><div className="carryIntro"><span>CARRY / PREDICTION ENGINE</span><h1>{language === "ru" ? "Какой матч разберём?" : "Which match should we analyze?"}</h1><p>{language === "ru" ? "Форма, составы, карта, риски и вероятность победы — в одном диалоге." : "Form, lineups, map, risks and win probability — in one conversation."}</p></div></div> : (
+          {sent.length === 0 ? <div className="emptyState"><div className="carryOrbStage"><ParticleOrb /></div><div className="carryIntro"><h1>{language === "ru" ? "Какой матч разберём?" : "Which match should we analyze?"}</h1><p>{language === "ru" ? "Форма, составы, карта, риски и вероятность победы — в одном диалоге." : "Form, lineups, map, risks and win probability — in one conversation."}</p></div></div> : (
             <div className="messages">
               {sent.map((item, i) => (
                 <div className="turn" key={`${item}-${i}`}>
@@ -216,7 +213,6 @@ export default function Home() {
               <button className="send" aria-label="Send message" disabled={!message.trim()}><ArrowUp size={19} strokeWidth={2.4} /></button>
             </>}
           </form>
-          <footer>Carry оценивает вероятность на основе доступных данных. Проверяйте важную информацию.</footer>
         </div>
       </section>
 
