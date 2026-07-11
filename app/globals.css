@@ -23,7 +23,7 @@ button { color:inherit; }
 .guestCard strong { display:block; font-size:13px; line-height:1.35; }
 .guestCard p { margin:6px 0 12px; color:var(--muted); font-size:12px; line-height:1.4; }
 .guestCard button { height:34px; border:0; border-radius:18px; padding:0 16px; background:var(--ink); color:var(--paper); cursor:pointer; }
-.recentBlock { margin-top:20px; min-height:0; overflow:hidden; }
+.recentBlock { margin-top:28px; min-height:0; overflow:hidden; }
 .recentTitle { display:flex; align-items:center; gap:2px; padding:0 9px 9px; font-size:13px; font-weight:600; color:var(--muted); }
 .recentLine { height:1px; margin:0 9px 7px; background:var(--line); }
 .recentChat { overflow:hidden; text-overflow:ellipsis; display:block; font-size:13px; }

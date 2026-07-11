@@ -3,10 +3,9 @@
 import { FormEvent, useEffect, useState } from "react";
 import { ParticleOrb } from "./particle-orb";
 import {
-  AppWindow, ArrowUp, Bell, CalendarClock, Check, ChevronDown, ChevronRight,
-  CircleHelp, Database, Ellipsis, Images, LayoutGrid, LogOut, Menu,
-  MessageSquarePlus, PanelLeftClose, PanelLeftOpen, Plug, Search, Settings,
-  Shield, SlidersHorizontal, Sparkles, Telescope, UserRound, X,
+  ArrowUp, Bell, Check, ChevronDown, ChevronRight, CircleHelp, Database,
+  Ellipsis, LogOut, Menu, MessageSquarePlus, PanelLeftClose, PanelLeftOpen,
+  Plug, Settings, Shield, SlidersHorizontal, Sparkles, UserRound, X,
 } from "lucide-react";
 
 type Language = "ru" | "en";
@@ -152,14 +151,6 @@ export default function Home() {
 
         <nav className="navList">
           <button onClick={startNewChat}><MessageSquarePlus /><span>{t.newChat}</span></button>
-          <button><Search /><span>{language === "ru" ? "Искать чаты" : "Search chats"}</span></button>
-          <button><Images /><span>{language === "ru" ? "Изображения" : "Images"}</span></button>
-          <button><AppWindow /><span>{language === "ru" ? "Приложения" : "Apps"}</span></button>
-          <button><Telescope /><span>{t.research}</span></button>
-          <button><LayoutGrid /><span>{language === "ru" ? "Проекты" : "Projects"}</span></button>
-          <button><CalendarClock /><span>{language === "ru" ? "Запланированное" : "Scheduled"}</span></button>
-          <button><Plug /><span>{language === "ru" ? "Плагины" : "Plugins"}</span></button>
-          <button><Ellipsis /><span>{language === "ru" ? "Больше" : "More"}</span></button>
         </nav>
 
         <div className="recentBlock">
