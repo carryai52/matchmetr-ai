@@ -12,6 +12,7 @@ button { color:inherit; }
 .sideTop { height:46px; display:flex; align-items:center; justify-content:space-between; white-space:nowrap; }
 .wordmark { display:flex; align-items:center; gap:9px; border:0; background:transparent; font-size:13px; font-weight:700; letter-spacing:.12em; padding:6px 4px; cursor:pointer; }
 .brandMark { width:22px; height:22px; border:1px solid color-mix(in srgb,var(--ink) 18%,transparent); border-radius:50%; background:radial-gradient(circle at 50% 50%,rgba(125,222,216,.22),transparent 64%); box-shadow:inset 0 0 0 4px color-mix(in srgb,var(--paper) 82%,transparent); }
+.brandOrb { width:25px; height:25px; flex:0 0 25px; overflow:hidden; border:1px solid rgba(125,222,216,.18); border-radius:50%; background:#030505; box-shadow:0 0 16px rgba(125,222,216,.08); }
 .iconButton,.openSidebar,.mobileMenu { width:34px; height:34px; display:grid; place-items:center; border:0; border-radius:8px; background:transparent; cursor:pointer; color:var(--muted); }
 .iconButton:hover,.openSidebar:hover,.mobileMenu:hover { background:var(--hover); }
 .navList { display:flex; flex-direction:column; gap:3px; margin-top:7px; }
@@ -41,9 +42,9 @@ button { color:inherit; }
 .theme-dark .profileMore:hover { background:#2d2d2d; color:#fff; }
 .profileMore span { transform:translateY(-3px); letter-spacing:1px; }
 .profileMenu { position:absolute; left:-8px; right:-8px; bottom:58px; z-index:30; padding:6px; border:1px solid var(--line); border-radius:16px; background:var(--paper); box-shadow:0 8px 26px rgba(0,0,0,.14); }
-.profileMenu button { width:100%; height:38px; display:flex; align-items:center; gap:10px; border:0; border-radius:9px; padding:0 10px; background:transparent; cursor:pointer; text-align:left; }
-.profileMenu button:hover { background:var(--hover); }
-.profileMenu svg { width:17px; height:17px; stroke-width:1.8; }
+.profileMenu button,.profileMenu>a { width:100%; height:38px; display:flex; align-items:center; gap:10px; border:0; border-radius:9px; padding:0 10px; color:var(--ink); background:transparent; cursor:pointer; text-align:left; text-decoration:none; }
+.profileMenu button:hover,.profileMenu>a:hover { background:var(--hover); }
+.profileMenu svg,.profileMenu>a svg { width:17px; height:17px; stroke-width:1.8; }
 .profileMenu .menuIdentity { height:50px; }
 .menuIdentity>span:nth-child(2) { flex:1; }
 .menuDivider { height:1px; margin:5px 7px; background:var(--line); }
@@ -76,8 +77,14 @@ h1 { margin:0; font-size:28px; line-height:1.25; letter-spacing:-.7px; font-weig
 .turn { display:flex; flex-direction:column; gap:30px; margin-bottom:38px; }
 .bubble { align-self:flex-end; max-width:70%; padding:10px 16px; border-radius:20px; background:var(--hover); font-size:15px; line-height:1.45; }
 .assistantMsg { width:100%; padding:0 2px; font-size:16px; line-height:1.75; }
-.closedChatNotice { width:min(768px,calc(100% - 32px)); min-height:64px; margin:0 auto 16px; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 14px 12px 18px; border:1px solid var(--line); border-radius:18px; color:var(--muted); background:#111; }
-.closedChatNotice button { height:38px; border:0; border-radius:11px; padding:0 15px; color:#111; background:#f2f2f2; font-size:13px; font-weight:600; cursor:pointer; }
+.closedChatNotice { width:min(768px,calc(100% - 32px)); min-height:86px; margin:0 auto 18px; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:14px; padding:14px 14px 14px 16px; border:1px solid #292929; border-radius:20px; color:var(--muted); background:linear-gradient(110deg,#111 0%,#0d1110 100%); box-shadow:inset 0 1px rgba(255,255,255,.025); }
+.closedChatIcon { width:38px; height:38px; display:grid; place-items:center; border:1px solid #293533; border-radius:12px; color:#8fc9c4; background:#121b1a; }
+.closedChatCopy { min-width:0; display:flex; flex-direction:column; gap:2px; }
+.closedChatCopy small { color:#66817e; font-size:9px; font-weight:650; letter-spacing:.1em; text-transform:uppercase; }
+.closedChatCopy strong { color:#e5e5e5; font-size:13px; font-weight:600; }
+.closedChatCopy p { margin:0; color:#777; font-size:11px; line-height:1.4; }
+.closedChatNotice>button { height:40px; display:flex; align-items:center; gap:6px; border:0; border-radius:12px; padding:0 14px; color:#0b1110; background:#dcefed; font-size:12px; font-weight:650; cursor:pointer; }
+.closedChatNotice>button:hover { background:#edfaf8; }
 .composerDock { position:relative; flex:0 0 auto; width:min(768px,calc(100% - 32px)); margin:0 auto; padding:8px 0 8px; }
 .composerDock.initialDock { position:static; width:100%; margin:28px 0 0; padding:0; transform:none; }
 .composer { height:56px; display:flex; align-items:center; gap:5px; padding:6px 7px 6px 17px; border:1px solid var(--line); border-radius:28px; background:var(--paper); box-shadow:0 2px 9px rgba(0,0,0,.08); }
@@ -240,6 +247,8 @@ footer { padding-top:8px; text-align:center; color:var(--muted); font-size:11px;
   .carryIntro p { font-size:15px; }
   .modeTrigger { padding-inline:7px; }
   .modeMenu { right:-44px; width:270px; }
+  .closedChatNotice { grid-template-columns:auto 1fr; }
+  .closedChatNotice>button { grid-column:1 / -1; justify-content:center; width:100%; }
   .settingRow { grid-template-columns:1fr; gap:8px; }
   .settingsModal { height:90vh; }
   .settingsLayout { grid-template-columns:1fr; }

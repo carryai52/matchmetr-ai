@@ -1,10 +1,11 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
 import { ParticleOrb } from "./particle-orb";
 import {
   ArrowUp, Bell, Check, ChevronDown, ChevronRight, CircleHelp, Database,
-  Ellipsis, LogOut, Menu, MessageSquarePlus, PanelLeftClose, PanelLeftOpen,
+  Ellipsis, LockKeyhole, LogOut, Menu, MessageSquarePlus, PanelLeftClose, PanelLeftOpen,
   Plug, Settings, Shield, SlidersHorizontal, Sparkles, UserRound, X,
 } from "lucide-react";
 
@@ -145,7 +146,7 @@ export default function Home() {
     <main className={`shell theme-${theme}`}>
       <aside className={sidebar ? "sidebar open" : "sidebar closed"} aria-label="Chat navigation">
         <div className="sideTop">
-          <button className="wordmark" aria-label="Carry home"><span className="brandMark" />CARRY</button>
+          <button className="wordmark" aria-label="Carry home" onClick={startNewChat}><span className="brandOrb"><ParticleOrb /></span>CARRY</button>
           <button className="iconButton" aria-label="Close sidebar" onClick={() => setSidebar(false)}><PanelLeftClose size={19} /></button>
         </div>
 
@@ -167,7 +168,7 @@ export default function Home() {
             <div className="profileMenu" role="menu">
               <button className="menuIdentity"><span className="avatar coral">vo</span><span><strong>Вася</strong><small>Plus</small></span><ChevronRight size={18} /></button>
               <div className="menuDivider" />
-              <button onClick={() => { setProfileOpen(false); setNotice("Тариф Plus уже выбран для демонстрации."); }}><Sparkles /><span>Изменить план</span></button>
+              <Link href="/pricing" onClick={() => setProfileOpen(false)}><Sparkles /><span>Изменить план</span></Link>
               <button onClick={() => openSettingsAt("personalization")}><SlidersHorizontal /><span>Персонализация</span></button>
               <button onClick={() => openSettingsAt("account")}><UserRound /><span>Профиль</span></button>
               <button onClick={openSettings}><Settings /><span>Настройки</span></button>
@@ -206,7 +207,7 @@ export default function Home() {
         </div>
 
         {hasMessages && !chatIsReadOnly && <div className="composerDock">{composer}</div>}
-        {hasMessages && chatIsReadOnly && <div className="closedChatNotice"><span>Этот чат завершён</span><button onClick={startNewChat}>Начать новый чат</button></div>}
+        {hasMessages && chatIsReadOnly && <div className="closedChatNotice"><div className="closedChatIcon"><LockKeyhole size={18} /></div><div className="closedChatCopy"><small>Архивный диалог</small><strong>Этот чат завершён</strong><p>История сохранена и доступна только для чтения.</p></div><button onClick={startNewChat}>Новый чат <ChevronRight size={16} /></button></div>}
       </section>
 
       {sidebar && <button className="scrim" aria-label="Close sidebar" onClick={() => setSidebar(false)} />}
