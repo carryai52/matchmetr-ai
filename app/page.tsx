@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { ParticleOrb } from "./particle-orb";
 import {
   AppWindow, ArrowUp, Bell, CalendarClock, Check, ChevronDown, ChevronRight,
@@ -12,14 +12,19 @@ import {
 type Language = "ru" | "en";
 type Theme = "light" | "dark";
 type SettingsSection = "general" | "notifications" | "personalization" | "apps" | "data" | "security" | "account";
-type AnalysisMode = "instant" | "balance" | "deep" | "full";
+type AnalysisMode = "instant" | "medium" | "high" | "full";
+
+type ChatTurn = { user: string; assistant: string };
+type ChatSession = { id: string; title: string; turns: ChatTurn[]; closed: boolean; updatedAt: number };
 
 const analysisModes = [
-  { id: "instant", label: "Instant", cost: "1 токен", description: "Быстрый прогноз по главным сигналам" },
-  { id: "balance", label: "Balance", cost: "3 токена", description: "Форма, составы и очные встречи" },
-  { id: "deep", label: "Deep", cost: "5 токенов", description: "Расширенный анализ данных и рисков" },
-  { id: "full", label: "Full", cost: "10 токенов", description: "Полный разбор с источниками" },
+  { id: "instant", label: "Instant", cost: "1 токен", description: "Быстрый ответ: вероятность и короткий вывод." },
+  { id: "medium", label: "Medium", cost: "3 токена", description: "Обычный анализ: форма команд и базовые факторы." },
+  { id: "high", label: "High", cost: "5 токенов", description: "Глубокий анализ: форма, составы, новости, личные встречи и риски." },
+  { id: "full", label: "Full", cost: "10 токенов", description: "Полный анализ: источники, карты, коэффициенты, личные встречи и расширенные факторы." },
 ] as const;
+
+const CHAT_STORAGE_KEY = "carry-chat-sessions";
 
 const copy = {
   ru: { newChat:"Новый чат", research:"Глубокое исследование", recent:"Недавнее", title:"С чего начнём?", placeholder:"Спросите что-нибудь", answer:"Привет! Чем я могу помочь?", settings:"Настройки", language:"Язык", theme:"Тема интерфейса", light:"Светлая", dark:"Тёмная", close:"Готово" },
@@ -28,7 +33,9 @@ const copy = {
 
 export default function Home() {
   const [message, setMessage] = useState("");
-  const [sent, setSent] = useState<string[]>([]);
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [storageReady, setStorageReady] = useState(false);
   const [sidebar, setSidebar] = useState(true);
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -42,12 +49,56 @@ export default function Home() {
   const [notice, setNotice] = useState<string | null>(null);
   const t = copy[language];
   const selectedMode = analysisModes.find((mode) => mode.id === analysisMode) ?? analysisModes[0];
+  const activeChat = sessions.find((session) => session.id === activeChatId) ?? null;
+  const turns = activeChat?.turns ?? [];
+  const hasMessages = turns.length > 0;
+  const chatIsReadOnly = Boolean(activeChat?.closed);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) ?? "[]") as ChatSession[];
+      setSessions(stored.map((session) => ({ ...session, closed: true })));
+    } catch {
+      setSessions([]);
+    } finally {
+      setStorageReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!storageReady) return;
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(sessions));
+  }, [sessions, storageReady]);
+
+  useEffect(() => {
+    const closeCurrentChat = () => {
+      if (!activeChatId || !storageReady) return;
+      const next = sessions.map((session) => session.id === activeChatId ? { ...session, closed: true } : session);
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(next));
+    };
+    window.addEventListener("beforeunload", closeCurrentChat);
+    return () => window.removeEventListener("beforeunload", closeCurrentChat);
+  }, [activeChatId, sessions, storageReady]);
 
   function submit(event: FormEvent) {
     event.preventDefault();
     const value = message.trim();
-    if (!value) return;
-    setSent((items) => [...items, value]);
+    if (!value || chatIsReadOnly) return;
+    const turn = { user: value, assistant: t.answer };
+    if (activeChatId) {
+      setSessions((items) => items.map((session) => session.id === activeChatId
+        ? { ...session, turns: [...session.turns, turn], updatedAt: Date.now() }
+        : session));
+    } else {
+      const id = crypto.randomUUID();
+      setSessions((items) => [{ id, title: value, turns: [turn], closed: false, updatedAt: Date.now() }, ...items]);
+      setActiveChatId(id);
+    }
+    setMessage("");
+  }
+
+  function startNewChat() {
+    setActiveChatId(null);
     setMessage("");
   }
 
@@ -100,7 +151,7 @@ export default function Home() {
         </div>
 
         <nav className="navList">
-          <button><MessageSquarePlus /><span>{t.newChat}</span></button>
+          <button onClick={startNewChat}><MessageSquarePlus /><span>{t.newChat}</span></button>
           <button><Search /><span>{language === "ru" ? "Искать чаты" : "Search chats"}</span></button>
           <button><Images /><span>{language === "ru" ? "Изображения" : "Images"}</span></button>
           <button><AppWindow /><span>{language === "ru" ? "Приложения" : "Apps"}</span></button>
@@ -114,7 +165,9 @@ export default function Home() {
         <div className="recentBlock">
           <div className="recentTitle"><span>{t.recent}</span><ChevronRight size={14} /></div>
           <div className="recentLine" />
-          {sent.slice().reverse().slice(0, 5).map((item, i) => <button className="recentChat" key={`${item}-${i}`}>{item}</button>)}
+          {sessions.slice().sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 8).map((session) => (
+            <button className={activeChatId === session.id ? "recentChat active" : "recentChat"} key={session.id} onClick={() => setActiveChatId(session.id)}>{session.title}</button>
+          ))}
         </div>
 
         <div className="profileArea">
@@ -148,20 +201,21 @@ export default function Home() {
           <button className="mobileMenu" aria-label="Open sidebar" onClick={() => setSidebar(true)}><Menu size={20} /></button>
         </header>
 
-        <div className={sent.length === 0 ? "chatBody initial" : "chatBody"}>
-          {sent.length === 0 ? <div className="emptyState"><div className="carryOrbStage"><ParticleOrb /></div><div className="carryIntro"><h1>{language === "ru" ? "Какой матч разберём?" : "Which match should we analyze?"}</h1><p>{language === "ru" ? "Carry AI скажет вероятность победы" : "Carry AI will estimate the probability of victory"}</p></div><div className="composerDock initialDock">{composer}</div></div> : (
+        <div className={!hasMessages ? "chatBody initial" : "chatBody"}>
+          {!hasMessages ? <div className="emptyState"><div className="carryOrbStage"><ParticleOrb /></div><div className="carryIntro"><h1>{language === "ru" ? "Какой матч разберём?" : "Which match should we analyze?"}</h1><p>{language === "ru" ? "Carry AI скажет вероятность победы" : "Carry AI will estimate the probability of victory"}</p></div><div className="composerDock initialDock">{composer}</div></div> : (
             <div className="messages">
-              {sent.map((item, i) => (
-                <div className="turn" key={`${item}-${i}`}>
-                  <div className="bubble">{item}</div>
-                  <div className="assistantMsg">{t.answer}</div>
+              {turns.map((turn, index) => (
+                <div className="turn" key={`${activeChatId}-${index}`}>
+                  <div className="bubble">{turn.user}</div>
+                  <div className="assistantMsg">{turn.assistant}</div>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {sent.length > 0 && <div className="composerDock">{composer}</div>}
+        {hasMessages && !chatIsReadOnly && <div className="composerDock">{composer}</div>}
+        {hasMessages && chatIsReadOnly && <div className="closedChatNotice"><span>Этот чат завершён</span><button onClick={startNewChat}>Начать новый чат</button></div>}
       </section>
 
       {sidebar && <button className="scrim" aria-label="Close sidebar" onClick={() => setSidebar(false)} />}

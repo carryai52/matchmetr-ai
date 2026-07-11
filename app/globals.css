@@ -17,6 +17,7 @@ button { color:inherit; }
 .navList { display:flex; flex-direction:column; gap:3px; margin-top:7px; }
 .navList button,.recentChat { width:100%; min-height:38px; display:flex; align-items:center; gap:11px; border:0; border-radius:8px; padding:8px 9px; background:transparent; text-align:left; white-space:nowrap; cursor:pointer; }
 .navList button:hover,.recentChat:hover { background:var(--hover); }
+.recentChat.active { background:var(--hover); color:var(--ink); }
 .navList svg { width:18px; height:18px; stroke-width:1.8; }
 .guestCard { padding:12px 8px 4px; }
 .guestCard strong { display:block; font-size:13px; line-height:1.35; }
@@ -75,6 +76,8 @@ h1 { margin:0; font-size:28px; line-height:1.25; letter-spacing:-.7px; font-weig
 .turn { display:flex; flex-direction:column; gap:30px; margin-bottom:38px; }
 .bubble { align-self:flex-end; max-width:70%; padding:10px 16px; border-radius:20px; background:var(--hover); font-size:15px; line-height:1.45; }
 .assistantMsg { width:100%; padding:0 2px; font-size:16px; line-height:1.75; }
+.closedChatNotice { width:min(768px,calc(100% - 32px)); min-height:64px; margin:0 auto 16px; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 14px 12px 18px; border:1px solid var(--line); border-radius:18px; color:var(--muted); background:#111; }
+.closedChatNotice button { height:38px; border:0; border-radius:11px; padding:0 15px; color:#111; background:#f2f2f2; font-size:13px; font-weight:600; cursor:pointer; }
 .composerDock { position:relative; flex:0 0 auto; width:min(768px,calc(100% - 32px)); margin:0 auto; padding:8px 0 8px; }
 .composerDock.initialDock { position:static; width:100%; margin:28px 0 0; padding:0; transform:none; }
 .composer { height:56px; display:flex; align-items:center; gap:5px; padding:6px 7px 6px 17px; border:1px solid var(--line); border-radius:28px; background:var(--paper); box-shadow:0 2px 9px rgba(0,0,0,.08); }
