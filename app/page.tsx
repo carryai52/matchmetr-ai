@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useRef, useState } from "react";
+import Link from "next/link";
+import { ParticleOrb } from "./particle-orb";
 import {
   AppWindow, ArrowUp, Bell, CalendarClock, Check, ChevronDown, ChevronRight,
   CircleHelp, Database, Ellipsis, Images, LayoutGrid, Library, LogOut, Menu,
@@ -24,7 +26,7 @@ export default function Home() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [language, setLanguage] = useState<Language>("ru");
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("dark");
   const [authenticated, setAuthenticated] = useState(true);
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
   const [settingsSection, setSettingsSection] = useState<SettingsSection>("general");
@@ -129,7 +131,7 @@ export default function Home() {
     <main className={`shell theme-${theme}`}>
       <aside className={sidebar ? "sidebar open" : "sidebar closed"} aria-label="Chat navigation">
         <div className="sideTop">
-          <button className="wordmark" aria-label="ChatGPT home">ChatGPT</button>
+          <button className="wordmark" aria-label="Carry home"><span className="brandMark" />CARRY</button>
           <button className="iconButton" aria-label="Close sidebar" onClick={() => setSidebar(false)}><PanelLeftClose size={19} /></button>
         </div>
 
@@ -180,12 +182,12 @@ export default function Home() {
         <header>
           <button className={sidebar ? "openSidebar hidden" : "openSidebar"} aria-label="Open sidebar" onClick={() => setSidebar(true)}><PanelLeftOpen size={20} /></button>
           <button className="mobileMenu" aria-label="Open sidebar" onClick={() => setSidebar(true)}><Menu size={20} /></button>
-          <button className="model">ChatGPT <ChevronDown size={15} /></button>
-          <div className="headerActions">{authenticated ? <><button className="headerIcon"><Share />{language === "ru" ? "Поделиться" : "Share"}</button><button className="plainIcon"><SlidersHorizontal /></button><button className="plainIcon"><Ellipsis /></button></> : <><button className="login" onClick={() => setAuthMode("login")}>Log in</button><button className="signup" onClick={() => setAuthMode("signup")}>Sign up for free</button></>}</div>
+          <button className="model">Carry 5.6 Ultra <ChevronDown size={15} /></button>
+          <div className="headerActions"><Link className="pricingLink" href="/pricing">Тарифы</Link>{authenticated ? <><button className="headerIcon"><Share />{language === "ru" ? "Поделиться" : "Share"}</button><button className="plainIcon"><SlidersHorizontal /></button><button className="plainIcon"><Ellipsis /></button></> : <><button className="login" onClick={() => setAuthMode("login")}>Log in</button><button className="signup" onClick={() => setAuthMode("signup")}>Sign up for free</button></>}</div>
         </header>
 
         <div className={sent.length === 0 ? "chatBody initial" : "chatBody"}>
-          {sent.length === 0 ? <div className="emptyState"><h1>{t.title}</h1></div> : (
+          {sent.length === 0 ? <div className="emptyState"><div className="carryOrbStage"><ParticleOrb /></div><div className="carryIntro"><span>CARRY / PREDICTION ENGINE</span><h1>{language === "ru" ? "Какой матч разберём?" : "Which match should we analyze?"}</h1><p>{language === "ru" ? "Форма, составы, карта, риски и вероятность победы — в одном диалоге." : "Form, lineups, map, risks and win probability — in one conversation."}</p></div></div> : (
             <div className="messages">
               {sent.map((item, i) => (
                 <div className="turn" key={`${item}-${i}`}>
@@ -214,7 +216,7 @@ export default function Home() {
               <button className="send" aria-label="Send message" disabled={!message.trim()}><ArrowUp size={19} strokeWidth={2.4} /></button>
             </>}
           </form>
-          <footer>ChatGPT может допускать ошибки. Проверяйте важную информацию.</footer>
+          <footer>Carry оценивает вероятность на основе доступных данных. Проверяйте важную информацию.</footer>
         </div>
       </section>
 

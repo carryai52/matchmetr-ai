@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ChatGPT — AI Assistant",
-  description: "A faithful interactive recreation of the ChatGPT conversation interface.",
+  title: "Carry AI — прогнозы матчей",
+  description: "Интеллектуальный чат для анализа матчей и оценки вероятности победы.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ru">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
