@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { ParticleOrb } from "./particle-orb";
 import {
-  AppWindow, ArrowUp, Bell, CalendarClock, Check, ChevronRight,
+  AppWindow, ArrowUp, Bell, CalendarClock, Check, ChevronDown, ChevronRight,
   CircleHelp, Database, Ellipsis, Images, LayoutGrid, LogOut, Menu,
   MessageSquarePlus, PanelLeftClose, PanelLeftOpen, Plug, Search, Settings,
   Shield, SlidersHorizontal, Sparkles, Telescope, UserRound, X,
@@ -13,6 +13,13 @@ type Language = "ru" | "en";
 type Theme = "light" | "dark";
 type SettingsSection = "general" | "notifications" | "personalization" | "apps" | "data" | "security" | "account";
 type AnalysisMode = "instant" | "balance" | "deep" | "full";
+
+const analysisModes = [
+  { id: "instant", label: "Instant", cost: "1 токен", description: "Быстрый прогноз по главным сигналам" },
+  { id: "balance", label: "Balance", cost: "3 токена", description: "Форма, составы и очные встречи" },
+  { id: "deep", label: "Deep", cost: "5 токенов", description: "Расширенный анализ данных и рисков" },
+  { id: "full", label: "Full", cost: "10 токенов", description: "Полный разбор с источниками" },
+] as const;
 
 const copy = {
   ru: { newChat:"Новый чат", research:"Глубокое исследование", recent:"Недавнее", title:"С чего начнём?", placeholder:"Спросите что-нибудь", answer:"Привет! Чем я могу помочь?", settings:"Настройки", language:"Язык", theme:"Тема интерфейса", light:"Светлая", dark:"Тёмная", close:"Готово" },
@@ -31,8 +38,10 @@ export default function Home() {
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
   const [settingsSection, setSettingsSection] = useState<SettingsSection>("general");
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>("instant");
+  const [analysisOpen, setAnalysisOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const t = copy[language];
+  const selectedMode = analysisModes.find((mode) => mode.id === analysisMode) ?? analysisModes[0];
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -56,15 +65,28 @@ export default function Home() {
   const composer = (
     <form className="composer" onSubmit={submit}>
       <input aria-label="Message Carry" placeholder={t.placeholder} value={message} onChange={(event) => setMessage(event.target.value)} />
-      <label className="modeSelect">
-        <span className="srOnly">Режим анализа</span>
-        <select value={analysisMode} onChange={(event) => setAnalysisMode(event.target.value as AnalysisMode)}>
-          <option value="instant">Instant · 1 токен</option>
-          <option value="balance">Balance · 3 токена</option>
-          <option value="deep">Deep · 5 токенов</option>
-          <option value="full">Full · 10 токенов</option>
-        </select>
-      </label>
+      <div className="modePicker">
+        {analysisOpen && (
+          <div className="modeMenu" role="menu">
+            <div className="modeMenuTitle">Глубина анализа</div>
+            {analysisModes.map((mode) => (
+              <button
+                key={mode.id}
+                type="button"
+                className={analysisMode === mode.id ? "modeOption selected" : "modeOption"}
+                onClick={() => { setAnalysisMode(mode.id); setAnalysisOpen(false); }}
+              >
+                <span className="modeOptionTop"><strong>{mode.label}</strong><em>{mode.cost}</em></span>
+                <small>{mode.description}</small>
+              </button>
+            ))}
+          </div>
+        )}
+        <button type="button" className="modeTrigger" aria-expanded={analysisOpen} onClick={() => setAnalysisOpen((open) => !open)}>
+          <span><strong>{selectedMode.label}</strong><small>{selectedMode.cost}</small></span>
+          <ChevronDown size={14} />
+        </button>
+      </div>
       <button className="send" aria-label="Отправить" disabled={!message.trim()}><ArrowUp size={19} strokeWidth={2.4} /></button>
     </form>
   );
