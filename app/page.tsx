@@ -83,7 +83,7 @@ export default function Home() {
           </div>
         )}
         <button type="button" className="modeTrigger" aria-expanded={analysisOpen} onClick={() => setAnalysisOpen((open) => !open)}>
-          <span><strong>{selectedMode.label}</strong><small>{selectedMode.cost}</small></span>
+          <span><strong>{selectedMode.label}</strong></span>
           <ChevronDown size={14} />
         </button>
       </div>

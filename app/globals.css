@@ -77,7 +77,7 @@ h1 { margin:0; font-size:28px; line-height:1.25; letter-spacing:-.7px; font-weig
 .assistantMsg { width:100%; padding:0 2px; font-size:16px; line-height:1.75; }
 .composerDock { position:relative; flex:0 0 auto; width:min(768px,calc(100% - 32px)); margin:0 auto; padding:8px 0 8px; }
 .composerDock.initialDock { position:static; width:100%; margin:28px 0 0; padding:0; transform:none; }
-.composer { height:56px; display:flex; align-items:center; gap:5px; padding:6px 7px 6px 9px; border:1px solid var(--line); border-radius:28px; background:var(--paper); box-shadow:0 2px 9px rgba(0,0,0,.08); }
+.composer { height:56px; display:flex; align-items:center; gap:5px; padding:6px 7px 6px 17px; border:1px solid var(--line); border-radius:28px; background:var(--paper); box-shadow:0 2px 9px rgba(0,0,0,.08); }
 .theme-dark .composer { background:#212121; border-color:#2f2f2f; box-shadow:none; }
 .composer.dictating { height:128px; display:block; padding:7px 14px 8px 12px; border-radius:27px; }
 .waveform { height:72px; display:flex; align-items:flex-start; gap:5px; padding:18px 6px 0; }
@@ -92,14 +92,13 @@ h1 { margin:0; font-size:28px; line-height:1.25; letter-spacing:-.7px; font-weig
 .dictationActions button { width:36px; height:36px; display:grid; place-items:center; border:0; border-radius:50%; background:transparent; color:var(--ink); cursor:pointer; }
 .dictationActions button:hover { background:var(--hover); }
 .dictationActions svg { width:20px; height:20px; stroke-width:1.9; }
-.composer input { min-width:0; flex:1; height:42px; border:0; outline:0; padding:0; background:transparent; color:var(--ink); font-size:16px; }
+.composer input { min-width:0; flex:1; height:44px; border:0; outline:0; padding:0; background:transparent; color:var(--ink); font-size:15px; line-height:44px; }
 .composer input::placeholder { color:#8a8a8a; }
 .modePicker { position:relative; flex:0 0 auto; }
-.modeTrigger { min-width:142px; height:40px; display:flex; align-items:center; justify-content:space-between; gap:12px; border:1px solid #343434; border-radius:13px; padding:0 11px 0 13px; color:#d8d8d8; background:#282828; cursor:pointer; }
-.modeTrigger:hover,.modeTrigger[aria-expanded="true"] { border-color:#454545; background:#303030; }
+.modeTrigger { min-width:auto; height:36px; display:flex; align-items:center; justify-content:center; gap:5px; border:0; border-radius:9px; padding:0 8px; color:#a6a6a6; background:transparent; cursor:pointer; }
+.modeTrigger:hover,.modeTrigger[aria-expanded="true"] { color:#e5e5e5; background:#292929; }
 .modeTrigger>span { display:flex; align-items:baseline; gap:7px; }
 .modeTrigger strong { font-size:12px; font-weight:600; }
-.modeTrigger small { color:#e8a84b; font-size:10px; }
 .modeTrigger svg { color:#777; transition:transform .18s ease; }
 .modeTrigger[aria-expanded="true"] svg { transform:rotate(180deg); }
 .modeMenu { position:absolute; right:0; bottom:48px; z-index:20; width:286px; padding:7px; border:1px solid #303030; border-radius:16px; background:#171717; box-shadow:0 18px 48px rgba(0,0,0,.5); }
@@ -108,7 +107,7 @@ h1 { margin:0; font-size:28px; line-height:1.25; letter-spacing:-.7px; font-weig
 .modeOption:hover,.modeOption.selected { background:#242424; }
 .modeOptionTop { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .modeOptionTop strong { font-size:13px; font-weight:600; }
-.modeOptionTop em { color:#e8a84b; font-size:11px; font-style:normal; }
+.modeOptionTop em { color:#a0a0a0; font-size:11px; font-style:normal; }
 .modeOption small { color:#858585; font-size:11px; line-height:1.35; }
 .send { width:38px; height:38px; flex:0 0 38px; display:grid; place-items:center; border:0; border-radius:50%; background:var(--ink); color:var(--paper); cursor:pointer; }
 .send:disabled { background:var(--hover); color:#aaa; cursor:default; }
@@ -236,8 +235,7 @@ footer { padding-top:8px; text-align:center; color:var(--muted); font-size:11px;
   .composerDock.initialDock { margin-top:22px; }
   .carryIntro h1 { font-size:32px; letter-spacing:-1.1px; }
   .carryIntro p { font-size:15px; }
-  .modeTrigger { min-width:120px; padding-inline:10px; }
-  .modeTrigger small { display:none; }
+  .modeTrigger { padding-inline:7px; }
   .modeMenu { right:-44px; width:270px; }
   .settingRow { grid-template-columns:1fr; gap:8px; }
   .settingsModal { height:90vh; }
