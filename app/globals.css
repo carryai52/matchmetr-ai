@@ -6,7 +6,7 @@ html,body { width:100%; height:100%; margin:0; overflow:hidden; }
 body,button,input { font-family:var(--font-ui); }
 button { color:inherit; }
 .shell { --paper:#fff; --sidebar:#f9f9f9; --ink:#0d0d0d; --muted:#6b6b6b; --line:#e5e5e5; --hover:#ececec; display:flex; width:100%; height:100dvh; color:var(--ink); background:var(--paper); font-size:14px; }
-.shell.theme-dark { --paper:#000; --sidebar:#090909; --ink:#f2f2f2; --muted:#aaa; --line:#272727; --hover:#202020; }
+.shell.theme-dark { --paper:#000; --sidebar:#000; --ink:#f2f2f2; --muted:#aaa; --line:#202020; --hover:#171717; }
 .sidebar { position:relative; width:260px; flex:0 0 260px; overflow:hidden; display:flex; flex-direction:column; padding:10px 12px 12px; background:var(--sidebar); border-right:1px solid var(--line); transition:width .2s ease, flex-basis .2s ease, padding .2s ease; }
 .sidebar.closed { width:0; flex-basis:0; padding-inline:0; border:0; }
 .sideTop { height:46px; display:flex; align-items:center; justify-content:space-between; white-space:nowrap; }
@@ -66,8 +66,9 @@ header { height:56px; flex:0 0 56px; display:flex; align-items:center; padding:8
 .openSidebar.hidden { display:none; }
 .mobileMenu,.scrim { display:none; }
 .chatBody { min-height:0; flex:1; overflow-y:auto; }
-.emptyState { width:min(768px,calc(100% - 32px)); min-height:100%; margin:0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; transform:translateY(-92px); text-align:center; }
-.carryOrbStage { width:210px; height:210px; margin-bottom:16px; overflow:hidden; border-radius:50%; background:#050706; box-shadow:0 0 0 1px rgba(125,222,216,.12),0 28px 80px rgba(0,0,0,.28); }
+.chatBody.initial { display:flex; align-items:center; justify-content:center; padding:72px 20px 210px; overflow:hidden; }
+.emptyState { width:min(768px,100%); min-height:0; margin:0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; transform:none; text-align:center; }
+.carryOrbStage { width:320px; height:320px; margin-bottom:22px; overflow:hidden; border-radius:50%; background:#050706; box-shadow:0 0 0 1px rgba(125,222,216,.13),0 36px 110px rgba(0,0,0,.35); }
 .particleOrb { display:block; width:100%; height:100%; }
 .carryIntro { display:flex; flex-direction:column; align-items:center; }
 .carryIntro>span { margin-bottom:11px; color:var(--muted); font-family:var(--font-geist-mono),monospace; font-size:10px; font-weight:600; letter-spacing:.14em; }
@@ -78,7 +79,7 @@ h1 { margin:0; font-size:28px; line-height:1.25; letter-spacing:-.7px; font-weig
 .bubble { align-self:flex-end; max-width:70%; padding:10px 16px; border-radius:20px; background:var(--hover); font-size:15px; line-height:1.45; }
 .assistantMsg { width:100%; padding:0 2px; font-size:16px; line-height:1.75; }
 .composerDock { position:relative; flex:0 0 auto; width:min(768px,calc(100% - 32px)); margin:0 auto; padding:8px 0 8px; }
-.composerDock.initialDock { position:absolute; z-index:5; left:50%; top:50%; transform:translate(-50%,-10px); margin:0; padding:0; }
+.composerDock.initialDock { position:absolute; z-index:5; left:50%; bottom:82px; top:auto; transform:translateX(-50%); margin:0; padding:0; }
 .composer { height:56px; display:flex; align-items:center; gap:5px; padding:6px 7px 6px 9px; border:1px solid var(--line); border-radius:28px; background:var(--paper); box-shadow:0 2px 9px rgba(0,0,0,.08); }
 .theme-dark .composer { background:#212121; border-color:#2f2f2f; box-shadow:none; }
 .composer.dictating { height:128px; display:block; padding:7px 14px 8px 12px; border-radius:27px; }
@@ -204,7 +205,9 @@ footer { padding-top:8px; text-align:center; color:var(--muted); font-size:11px;
   .signup { display:none; }
   .emptyState,.messages,.composerDock { width:calc(100% - 24px); }
   h1 { font-size:24px; }
-  .carryOrbStage { width:164px; height:164px; }
+  .chatBody.initial { padding:50px 12px 180px; }
+  .carryOrbStage { width:230px; height:230px; margin-bottom:18px; }
+  .composerDock.initialDock { bottom:62px; }
   .pricingLink { padding:0 11px; }
   .settingRow { grid-template-columns:1fr; gap:8px; }
   .settingsModal { height:90vh; }
