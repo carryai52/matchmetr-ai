@@ -1,17 +1,18 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import { ParticleOrb } from "./particle-orb";
 import {
   AppWindow, ArrowUp, Bell, CalendarClock, Check, ChevronRight,
-  CircleHelp, Database, Ellipsis, Images, LayoutGrid, Library, LogOut, Menu,
-  MessageSquarePlus, Mic, PanelLeftClose, PanelLeftOpen, Plug, Search, Settings,
-  Plus, Shield, SlidersHorizontal, Sparkles, Telescope, UserRound, Volume2, X,
+  CircleHelp, Database, Ellipsis, Images, LayoutGrid, LogOut, Menu,
+  MessageSquarePlus, PanelLeftClose, PanelLeftOpen, Plug, Search, Settings,
+  Shield, SlidersHorizontal, Sparkles, Telescope, UserRound, X,
 } from "lucide-react";
 
 type Language = "ru" | "en";
 type Theme = "light" | "dark";
 type SettingsSection = "general" | "notifications" | "personalization" | "apps" | "data" | "security" | "account";
+type AnalysisMode = "instant" | "balance" | "deep" | "full";
 
 const copy = {
   ru: { newChat:"Новый чат", research:"Глубокое исследование", recent:"Недавнее", title:"С чего начнём?", placeholder:"Спросите что-нибудь", answer:"Привет! Чем я могу помочь?", settings:"Настройки", language:"Язык", theme:"Тема интерфейса", light:"Светлая", dark:"Тёмная", close:"Готово" },
@@ -29,14 +30,8 @@ export default function Home() {
   const [authenticated, setAuthenticated] = useState(true);
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
   const [settingsSection, setSettingsSection] = useState<SettingsSection>("general");
-  const [attachOpen, setAttachOpen] = useState(false);
-  const [listening, setListening] = useState(false);
-  const [voiceOpen, setVoiceOpen] = useState(false);
+  const [analysisMode, setAnalysisMode] = useState<AnalysisMode>("instant");
   const [notice, setNotice] = useState<string | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const recognitionRef = useRef<any>(null);
-  const messageBeforeDictationRef = useRef("");
   const t = copy[language];
 
   function submit(event: FormEvent) {
@@ -58,73 +53,21 @@ export default function Home() {
     setSettingsOpen(true);
   }
 
-  function stopAudio() {
-    recognitionRef.current?.stop?.();
-    recognitionRef.current = null;
-    if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.stop();
-    mediaRecorderRef.current = null;
-    streamRef.current?.getTracks().forEach((track) => track.stop());
-    streamRef.current = null;
-    setListening(false);
-  }
-
-  async function startAudio(transcribe:boolean) {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
-      streamRef.current = stream;
-      const recorder = new MediaRecorder(stream);
-      recorder.start();
-      mediaRecorderRef.current = recorder;
-      setListening(true);
-      if (transcribe) {
-        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-        if (SpeechRecognition) {
-          const recognition = new SpeechRecognition();
-          recognition.lang = language === "ru" ? "ru-RU" : "en-US";
-          recognition.interimResults = true;
-          recognition.continuous = true;
-          recognition.onresult = (event:any) => {
-            let transcript = "";
-            for (let i = event.resultIndex; i < event.results.length; i += 1) transcript += event.results[i][0].transcript;
-            if (transcript.trim()) setMessage(transcript.trim());
-          };
-          recognition.onerror = () => setNotice("Не удалось распознать речь. Проверьте доступ к микрофону.");
-          recognitionRef.current = recognition;
-          recognition.start();
-        } else setNotice("Запись началась, но распознавание речи не поддерживается этим браузером.");
-      }
-    } catch {
-      setNotice("Доступ к микрофону запрещён. Разрешите его в адресной строке браузера и попробуйте снова.");
-      stopAudio();
-    }
-  }
-
-  async function toggleDictation() {
-    if (listening) confirmDictation();
-    else {
-      messageBeforeDictationRef.current = message;
-      await startAudio(true);
-    }
-  }
-
-  function cancelDictation() {
-    stopAudio();
-    setMessage(messageBeforeDictationRef.current);
-  }
-
-  function confirmDictation() {
-    stopAudio();
-  }
-
-  async function startVoiceMode() {
-    await startAudio(false);
-    if (streamRef.current) setVoiceOpen(true);
-  }
-
-  function closeVoiceMode() {
-    stopAudio();
-    setVoiceOpen(false);
-  }
+  const composer = (
+    <form className="composer" onSubmit={submit}>
+      <input aria-label="Message Carry" placeholder={t.placeholder} value={message} onChange={(event) => setMessage(event.target.value)} />
+      <label className="modeSelect">
+        <span className="srOnly">Режим анализа</span>
+        <select value={analysisMode} onChange={(event) => setAnalysisMode(event.target.value as AnalysisMode)}>
+          <option value="instant">Instant · 1 токен</option>
+          <option value="balance">Balance · 3 токена</option>
+          <option value="deep">Deep · 5 токенов</option>
+          <option value="full">Full · 10 токенов</option>
+        </select>
+      </label>
+      <button className="send" aria-label="Отправить" disabled={!message.trim()}><ArrowUp size={19} strokeWidth={2.4} /></button>
+    </form>
+  );
 
   return (
     <main className={`shell theme-${theme}`}>
@@ -184,7 +127,7 @@ export default function Home() {
         </header>
 
         <div className={sent.length === 0 ? "chatBody initial" : "chatBody"}>
-          {sent.length === 0 ? <div className="emptyState"><div className="carryOrbStage"><ParticleOrb /></div><div className="carryIntro"><h1>{language === "ru" ? "Какой матч разберём?" : "Which match should we analyze?"}</h1><p>{language === "ru" ? "Форма, составы, карта, риски и вероятность победы — в одном диалоге." : "Form, lineups, map, risks and win probability — in one conversation."}</p></div></div> : (
+          {sent.length === 0 ? <div className="emptyState"><div className="carryOrbStage"><ParticleOrb /></div><div className="carryIntro"><h1>{language === "ru" ? "Какой матч разберём?" : "Which match should we analyze?"}</h1><p>{language === "ru" ? "Carry AI скажет вероятность победы" : "Carry AI will estimate the probability of victory"}</p></div><div className="composerDock initialDock">{composer}</div></div> : (
             <div className="messages">
               {sent.map((item, i) => (
                 <div className="turn" key={`${item}-${i}`}>
@@ -196,24 +139,7 @@ export default function Home() {
           )}
         </div>
 
-        <div className={sent.length === 0 ? "composerDock initialDock" : "composerDock"}>
-          {attachOpen && <div className="attachMenu"><button onClick={() => setNotice("Демонстрация: файл выбран.")}><Library />Добавить фотографии и файлы</button><button onClick={() => setNotice("Демонстрация: проект выбран.")}><LayoutGrid />Выбрать проект</button></div>}
-          <form className={listening && !voiceOpen ? "composer dictating" : "composer"} onSubmit={submit}>
-            {listening && !voiceOpen ? <>
-              <div className="waveform"><span className="waveLine" /><span className="liveBars">{[8,18,30,24,34,28,36,26,18,32,34,22,30].map((height,i) => <i key={i} style={{height}} />)}</span></div>
-              <div className="dictationBottom">
-                <button type="button" className="composerIcon" aria-label="Add files" onClick={() => setAttachOpen((v) => !v)}><Plus /></button>
-                <div className="dictationActions"><button type="button" aria-label="Отменить диктовку" onClick={cancelDictation}><X /></button><button type="button" aria-label="Подтвердить диктовку" onClick={confirmDictation}><Check /></button></div>
-              </div>
-            </> : <>
-              <button type="button" className="composerIcon" aria-label="Add files" onClick={() => setAttachOpen((v) => !v)}><Plus /></button>
-              <input aria-label="Message ChatGPT" placeholder={t.placeholder} value={message} onChange={(e) => setMessage(e.target.value)} />
-              <button type="button" className="composerIcon" aria-label="Start dictation" onClick={toggleDictation}><Mic /></button>
-              <button type="button" className="voiceButton" aria-label="Voice mode" onClick={startVoiceMode}><Volume2 /></button>
-              <button className="send" aria-label="Send message" disabled={!message.trim()}><ArrowUp size={19} strokeWidth={2.4} /></button>
-            </>}
-          </form>
-        </div>
+        {sent.length > 0 && <div className="composerDock">{composer}</div>}
       </section>
 
       {sidebar && <button className="scrim" aria-label="Close sidebar" onClick={() => setSidebar(false)} />}
@@ -240,7 +166,6 @@ export default function Home() {
       )}
 
       {authMode && <AuthModal mode={authMode} onClose={() => setAuthMode(null)} onSuccess={() => { setAuthenticated(true); setAuthMode(null); }} onSwitch={setAuthMode} />}
-      {voiceOpen && <div className="voiceOverlay"><button className="voiceClose" aria-label="Закрыть голосовой режим" onClick={closeVoiceMode}><X /></button><div className="voiceOrb live"><Mic /></div><h2>Слушаю…</h2><p>Голосовой режим использует микрофон</p><button className="voiceStop" onClick={closeVoiceMode}>Завершить</button></div>}
       {notice && <div className="notice"><span>{notice}</span><button aria-label="Закрыть уведомление" onClick={() => setNotice(null)}><X /></button></div>}
     </main>
   );
